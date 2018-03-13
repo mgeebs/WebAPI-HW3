@@ -116,29 +116,31 @@ router.post('/signin', function(req, res) {
 
 router.route('/movies') //create a new movie
     .post(authJwtController.isAuthenticated, function (req, res) {
-    var movieNew = new Movie(); // a new movie schema object
-    movieNew.title = req.body.title;
-    movieNew.year = req.body.year;
-    movieNew.genre = req.body.genre;
-    movieNew.actors = req.body.actors;
+        var movieNew = new Movie(); // a new movie schema object
+        var numActors = req.body.actors.length;
+        movieNew.title = req.body.title;
+        movieNew.year = req.body.year;
+        movieNew.genre = req.body.genre;
+        movieNew.actors = req.body.actors;
 
-    movieNew.save(function (err) {
-        if (err) {
-            // duplicate entry
-            if (err.code == 11000)
-                return res.status(400).json({success: false, message: 'A movie with that name already exists. '});
-            else
-                return res.status(400).send(err);
+        if (numActors < 3) {
+            res.status(400).json({failure: false, message: 'not enough actors, need at least 3'})
         }
         else {
-            var numActors = req.body.actors.length;
 
-            if (numActors < 3) {
-                res.status(400).json({success: false, message: 'not enough actors, need at least 3'})
-            }
-            else res.status(201).json({message: 'Movie created!'});
+            movieNew.save(function (err) {
+                if (err) {
+                    // duplicate entry
+                    if (err.code == 11000)
+                        return res.status(400).json({
+                            success: false,
+                            message: 'A movie with that name already exists. '
+                        });
+                    else
+                        return res.status(400).send(err);
+                }
+            });
         }
-        });
 
 });
 
