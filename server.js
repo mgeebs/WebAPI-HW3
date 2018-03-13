@@ -25,6 +25,10 @@ app.use(passport.initialize());
 
 var router = express.Router();
 
+router.route('/')
+    .get(function (req, res) {
+        res.json({success: true, message: "home page for Michael's movies db"});
+    })
 router.route('/postjwt')
     .post(authJwtController.isAuthenticated, function (req, res) {
             console.log(req.body);
