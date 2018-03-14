@@ -127,15 +127,15 @@ router.route('/movies') //create a new movie
             if (err) {
                 // duplicate entry
                 if (err.code == 11000) {
-                    return res.status(400).json({
+                    res.status(400).json({
                         success: false,
                         message: 'A movie with that name already exists. '
                     });
                 }
                 else
-                    return res.status(400).send(err);
+                    res.status(400).send(err);
             }
-            else return res.status(201).send('movie created!');
+            else res.status(201).send('movie created!');
             });
 });
 
