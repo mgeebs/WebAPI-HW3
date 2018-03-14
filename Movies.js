@@ -8,7 +8,7 @@ var GENRES = ['Action','Adventure','Horror','Comedy','Drama','Fantasy','Mystery'
 var MovieSchema = new Schema({
     title: {type: String, required: true, unique: true},
     year: {type: Number, require: true},
-    genre: {type: String, enum: GENRES, require: true},
+    genre: {type: String, enum: GENRES, required: true},
     actors: {
         type: [{
             actorName: {type: String, required: true},
