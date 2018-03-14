@@ -115,7 +115,7 @@ router.post('/signin', function(req, res) {
 });
 
 router.route('/movies') //create a new movie
-    .post(/*authJwtController.isAuthenticated,*/ function (req, res) {
+    .post(authJwtController.isAuthenticated, function (req, res) {
         var movieNew = new Movie(); // a new movie schema object
 
         movieNew.title = req.body.title;

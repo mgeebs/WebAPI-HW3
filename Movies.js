@@ -9,11 +9,19 @@ var MovieSchema = new Schema({
     title: {type: String, required: true, unique: true},
     year: {type: Number, require: true},
     genre: {type: String, enum: GENRES, require: true},
-    actors: {type: [{
+    actors: {
+        type: [{
             actorName: {type: String, required: true},
             characterName: {type: String, required: true}
         }],
-            required: true}
+        required: true,
+        validate: {
+            validator: function (v) {
+                return v.length >= 3;
+            },
+            message: 'You must have at least 3 actors!'
+        }
+    }
 });
 
 
