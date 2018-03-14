@@ -108,7 +108,7 @@ router.post('/signin', function(req, res) {
                 res.json({success: true, token: 'JWT ' + token});
             }
             else {
-                res.status(401).send({success: false, msg: 'Authentication failed. Wrong password.'});
+                res.status(401).json({success: false, msg: 'Authentication failed. Wrong password.'});
             }
         });
     });
@@ -135,6 +135,7 @@ router.route('/movies') //create a new movie
                 else
                     return res.status(400).send(err);
             }
+            else return res.status(201).send('movie created!');
             });
 });
 
