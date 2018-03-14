@@ -123,22 +123,19 @@ router.route('/movies') //create a new movie
         movieNew.genre = req.body.genre;
         movieNew.actors = req.body.actors;
 
-
-
         movieNew.save(function (err) {
             if (err) {
                 // duplicate entry
-                if (err.code == 11000)
+                if (err.code == 11000) {
                     return res.status(400).json({
                         success: false,
                         message: 'A movie with that name already exists. '
                     });
+                }
                 else
                     return res.status(400).send(err);
             }
             });
-
-
 });
 
 router.route('/movies')
