@@ -13,9 +13,9 @@ var app = express();
 
 mongoose.connect(process.env.DB , (err, database) => {
     if (err) throw err;
-console.log("Connected to the database.");
-db = database;
-console.log("Database connected on " + process.env.DB);
+    console.log("Connected to the database.");
+    db = database;
+    console.log("Database connected on " + process.env.DB);
 });
 
 app.use(bodyParser.json());
@@ -113,6 +113,32 @@ router.post('/signin', function(req, res) {
         });
     });
 });
+
+router.route('/reviews') //create a new review
+    .post(authJwtController.isAuthenticated, function (req, res) {
+        var reviewNew = new Review();
+
+        reviewNew.reviewerName = req.body.reviewerName;
+        reviewNew.movieTitle = req.body.movieTitle;
+        reviewNew.quote = req.body.quote;
+        reviewNew.rating = req.body.rating;
+
+        Movie.findOne({ title: req.body.movieTitle }).select('title').exec(function (err, movie) {
+            if (err) res.status(400).send(err);
+            if (movie != NULL) {
+                reviewNew.save(function (err) {
+                    if (err) {
+                        res.status(400).json({
+                            success: false,
+                            message: 'The review is missing a required field'
+                        });
+                    }
+                    else res.status(201).send('Review created!');
+                });
+            }
+            else res.status(400).send('movie does not exist, cannot post review');
+        });
+    });
 
 router.route('/movies') //create a new movie
     .post(authJwtController.isAuthenticated, function (req, res) {
