@@ -153,7 +153,7 @@ router.route('/reviews')
 
 router.route('/reviews/:reviewsId')
     .get(function (req, res) {
-        var id = req.params.reviewId;
+        var id = req.params.reviewsId;
         Review.findById(id, function(err, review) {
             if (err) res.status(404).send(err);
 
