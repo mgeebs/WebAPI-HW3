@@ -127,7 +127,7 @@ router.route('/reviews') //create a new review
                 reviewNew.movieTitle = req.body.movieTitle;
                 reviewNew.quote = req.body.quote;
                 reviewNew.rating = req.body.rating;
-                
+
                 reviewNew.save(function (err) {
                     if (err) {
                         res.status(400).json({
@@ -139,6 +139,25 @@ router.route('/reviews') //create a new review
                 });
             }
             else res.status(400).send('movie does not exist, cannot post review');
+        });
+    });
+
+router.route('/reviews')
+    .get(function (req, res) {
+        Review.find(function (err, reviews) {
+            if (err) res.status(404).send(err);
+            // return the reviews
+            else res.json(reviews);
+        });
+    });
+
+router.route('/reviews/:reviewsId')
+    .get(function (req, res) {
+        var id = req.params.reviewId;
+        Movie.findById(id, function(err, review) {
+            if (err) res.status(404).send(err);
+
+            else res.json(review);
         });
     });
 
