@@ -11,7 +11,8 @@ var bcrypt = require('bcrypt-nodejs');
 var Schema = mongoose.Schema;
 var dotenv = require('dotenv').config();
 var app = express();
-
+var util = require('util');
+var stringify = require('json-stringify-safe');
 mongoose.connect(process.env.DB , (err, database) => {
     if (err) throw err;
     console.log("Connected to the database.");
@@ -25,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 
 var router = express.Router();
-
+//var reviews = db.collection('reviews');
 router.route('/')
     .get(function (req, res) {
         res.json({success: true, message: "home page for Michael's movies db"});
@@ -189,19 +190,37 @@ router.route('/movies') //create a new movie
 router.route('/movies')
     .get(authJwtController.isAuthenticated, function (req, res) {
         Movie.find(function (err, movies) {
-            if (err) res.status(404).send(err);
-            // return the movies
-            else res.json(movies);
+
+                if (err) res.status(404).send(err);
+                // return the movies
+                else res.json(movies);
+
         });
     });
 
 router.route('/movies/:movieId')
-    .get(authJwtController.isAuthenticated, function (req, res) {
+    .get(function (req, res) {
         var id = req.params.movieId;
-        Movie.findById(id, function(err, movie) {
-            if (err) res.status(404).send(err);
-
-            else res.json(movie);
+        var reviewsQuery = req.query.reviews;
+        Movie.findById(id, function (err, movie) {
+            if (err) res.send(err);
+            if (reviewsQuery != "true"){
+                var userJson = JSON.stringify(movie);
+                // return only movie
+                res.json(movie);
+            } else { //Return movie and all reviews that go with movie
+                Review.find(function (err, reviews) {
+                    if (err) res.send(err);
+                    //find matching review movietitle
+                    Review.find({ movieTitle: movie.title }).exec(function (err, reviews) {
+                        if (err) res.send(err);
+                        res.json({
+                            movie:movie,
+                            reviews:reviews
+                        });
+                    });
+                });
+            }
         });
     });
 
