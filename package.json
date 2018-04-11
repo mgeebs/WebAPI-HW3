@@ -19,6 +19,7 @@
     "passport-jwt": "^3.0.1",
     "dotenv": "^5.0.1",
     "util": "^0.10.3",
+    "cors": "^2.8.4",
     "json-stringify-safe": "^5.0.1"
   }
 }

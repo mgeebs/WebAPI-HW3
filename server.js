@@ -13,6 +13,7 @@ var dotenv = require('dotenv').config();
 var app = express();
 var util = require('util');
 var stringify = require('json-stringify-safe');
+var cors = require('cors');
 mongoose.connect(process.env.DB , (err, database) => {
     if (err) throw err;
     console.log("Connected to the database.");
@@ -24,6 +25,42 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(passport.initialize());
+app.use(cors());
+
+const GA_TRACKING_ID = process.env.GA_KEY;
+
+function trackDimension(category, action, label, value, dimension, metric) {
+
+    var options = { method: 'GET',
+        url: 'https://www.google-analytics.com/collect',
+        qs:
+            {   // API Version.
+                v: '1',
+                // Tracking ID / Property ID.
+                tid: GA_TRACKING_ID,
+                // Random Client Identifier. Ideally, this should be a UUID that
+                // is associated with particular user, device, or browser instance.
+                cid: crypto.randomBytes(16).toString("hex"),
+                // Event hit type.
+                t: 'event',
+                // Event category.
+                ec: category,
+                // Event action.
+                ea: action,
+                // Event label.
+                el: label,
+                // Event value.
+                ev: value,
+                // Custom Dimension
+                cd1: dimension,
+                // Custom Metric
+                cm1: metric
+            },
+        headers:
+            {  'Cache-Control': 'no-cache' } };
+
+    return rp(options);
+}
 
 var router = express.Router();
 //var reviews = db.collection('reviews');
@@ -205,13 +242,11 @@ router.route('/movies/:movieId')
         Movie.findById(id, function (err, movie) {
             if (err) res.send(err);
             if (reviewsQuery != "true"){
-                var userJson = JSON.stringify(movie);
-                // return only movie
                 res.json(movie);
-            } else { //Return movie and all reviews that go with movie
+            } 
+            else {
                 Review.find(function (err, reviews) {
                     if (err) res.send(err);
-                    //find matching review movietitle
                     Review.find({ movieTitle: movie.title }).exec(function (err, reviews) {
                         if (err) res.send(err);
                         res.json({
