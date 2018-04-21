@@ -229,8 +229,11 @@ router.route('/movies')
         Movie.find(function (err, movies) {
 
                 if (err) res.status(404).send(err);
-                // return the movies
-                else res.json(movies);
+            if (reviewsQuery != "true"){
+                res.json(movie);
+            }
+
+            else res.json(movies);
 
         });
     });
