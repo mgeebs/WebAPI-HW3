@@ -9,6 +9,7 @@ var MovieSchema = new Schema({
     title: {type: String, required: true, unique: true},
     year: {type: Number, require: true},
     genre: {type: String, enum: GENRES, required: true},
+    imageUrl: {type: String},
     actors: {
         type: [{
             actorName: {type: String, required: true},
