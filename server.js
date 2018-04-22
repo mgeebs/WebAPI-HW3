@@ -181,7 +181,7 @@ router.route('/reviews') //create a new review
     });
 
 router.route('/reviews')
-    .get(function (req, res) {
+    .get(authJwtController.isAuthenticated, function (req, res) {
         Review.find(function (err, reviews) {
             if (err) res.status(404).send(err);
             // return the reviews
@@ -190,7 +190,7 @@ router.route('/reviews')
     });
 
 router.route('/reviews/:reviewsId')
-    .get(function (req, res) {
+    .get(authJwtController.isAuthenticated, function (req, res) {
         var id = req.params.reviewsId;
         Review.findById(id, function(err, review) {
             if (err) res.status(404).send(err);
@@ -236,7 +236,7 @@ router.route('/movies')
     });
 
 router.route('/movies/:movieId')
-    .get(function (req, res) {
+    .get(authJwtController.isAuthenticated, function (req, res) {
         var id = req.params.movieId;
         var reviewsQuery = req.query.reviews;
         Movie.findById(id, function (err, movie) {
