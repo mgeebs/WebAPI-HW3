@@ -226,14 +226,45 @@ router.route('/movies') //create a new movie
 
 router.route('/movies')
     .get(authJwtController.isAuthenticated, function (req, res) {
-        Movie.find(function (err, movies) {
 
-                if (err) res.status(404).send(err);
-                // return the movies
-                else res.json(movies);
+        if (req.query.reviews === "true") {
+            Movie.find(function (err, movies) {
 
-        });
+                if(err)
+                    res.send(err);
+                else{
+                    Movie.aggregate([{
+                        $lookup:{
+                            from: "reviews",
+                            localField: "title",
+                            foreignField: "movieTitle",
+                            as: 'review'
+                        }
+                    }
+                    ], function (err, result) {
+                        if(err) res.send(err);
+                        else{
+                            result.sort((a, b) => parseFloat(b.avgRating) - parseFloat(a.avgRating));
+                            res.json(result);
+                        }
+                    });
+                }
+
+            });
+        }
+        else {
+            Movie.find(function (err, movies) {
+                if (err) res.json({message: "movies not in database"});
+
+                //var movieJson = JSON.stringify(movies);
+                // return that user
+                res.json(movies);
+            });
+
+        }
+
     });
+
 
 router.route('/movies/:movieId')
     .get(authJwtController.isAuthenticated, function (req, res) {
